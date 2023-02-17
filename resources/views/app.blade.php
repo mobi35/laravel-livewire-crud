@@ -19,7 +19,11 @@
     </head>
     <body class="antialiased">
 
+        <livewire:navigation /> 
+
+
         <livewire:contact-form /> 
+
 
         @livewireScripts()
     </body>
