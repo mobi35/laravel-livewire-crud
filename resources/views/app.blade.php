@@ -25,6 +25,8 @@
         <livewire:contact-form /> 
 
 
+        <livewire:chart />
+
         @livewireScripts()
     </body>
 
