@@ -1,19 +1,19 @@
-<div>
-    <canvas id="myChart"></canvas>
 
-    <button wire:click="addSomething()"> kurikit </button>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    const ctx = document.getElementById('myChart');
-    new Chart(ctx, {
+<div wire:ignore x-data="{
+   
+    selectedYear: @entangle('selectedYear'),
+    thisYearOrders: @entangle('thisYearOrders'),
+    init() {
+
+
+    const newChart = new Chart(this.$refs.canvas, {
         type: 'bar',
         data: {
-        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange', 'Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
         datasets: [{
             label: '# of Votes',
-            data: {{ Js::from($chartData) }},
+            data: this.thisYearOrders ,
             borderWidth: 1
         }]
         },
@@ -25,4 +25,34 @@
         }
         }
     });
-</script>
+
+
+    Livewire.on('updateTheChart', () => {
+        newChart.data.datasets[0].data = this.thisYearOrders;
+        newChart.update();
+    })
+
+    }
+
+
+
+
+}">
+    <canvas x-ref="canvas" id="myChart"></canvas>
+
+    {{ array_sum($thisYearOrders) }} <br/>
+    {{ array_sum($lastYearOrders) }} 
+
+    <br> <br>
+   muri:  <p x-text="selectedYear"> </p>
+
+    <select  wire:change="updateOrdersCount" wire:model="selectedYear"  id="available_year">
+        @foreach ($available_years as $day)
+            <option value="{{ $day }} ">{{ $day }}</option>
+        @endforeach
+
+    </select>
+
+
+</div>
+

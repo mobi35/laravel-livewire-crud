@@ -60,5 +60,21 @@ class User extends Authenticatable
         'profile_photo_url',
     ];
 
+    public function scopeGroupByMonth(Builder $query)
+    {
+        return $query->selectRaw('month(email_verified_at) as month')
+            ->selectRaw('count(*) as count')
+            ->groupBy('month')
+            ->orderBy('month')
+            ->pluck('count', 'month')
+            ->values()
+            ->toArray();
+    }
+
+    public function scopeGetYearOrders(Builder $query, $year)
+    {
+        return $query->whereYear('email_verified_at', $year);
+    }
+
 
 }

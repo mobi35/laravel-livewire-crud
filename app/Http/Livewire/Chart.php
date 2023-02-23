@@ -10,26 +10,37 @@ class Chart extends Component
 
     public $chartData = [];
 
-    public function addSomething()
-    {
-        $this->chartData = User::selectRaw('month(created_at) as month')
-            ->selectRaw('count(*) as count')
-            ->groupBy('month')
-            ->orderBy('month')
-            ->pluck('count', 'month')
-            ->values()->toArray();
+    public $thisYearOrders = 0;
+    public $lastYearOrders = 0;
 
+    public $selectedYear;
+
+    public function mount()
+    {
+        $this->selectedYear = date('Y');
     }
+
+    
+    public function updateOrdersCount()
+    {
+        $this->thisYearOrders = User::getYearOrders($this->selectedYear)->groupByMonth();
+        $this->lastYearOrders = User::getYearOrders($this->selectedYear- 1)->groupByMonth();
+        $this->emit('updateTheChart');
+    }
+
 
     public function render()
     {
-        $this->chartData = User::selectRaw('month(email_verified_at) as month')
-            ->selectRaw('count(*) as count')
-            ->groupBy('month')
-            ->orderBy('month')
-            ->pluck('count', 'month')
-            ->values()->toArray();
+        $availableYears = [ date('Y') ,  date('Y') - 1, date('Y') - 2 , date('Y') - 3, 2013];
 
-        return view('livewire.chart');
+        $this->thisYearOrders = User::getYearOrders($this->selectedYear)->groupByMonth();
+        $this->lastYearOrders = User::getYearOrders($this->selectedYear- 1)->groupByMonth();
+
+        $this->chartData = User::groupByMonth();
+
+        return view('livewire.chart', 
+        [
+            'available_years' => $availableYears
+        ]);
     }
 }
